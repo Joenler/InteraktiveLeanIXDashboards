@@ -1,14 +1,9 @@
-
-
-
-
-
 import json
 import requests
 import pandas as pd
 import datetime
-
-auth_url, api_token, request_url = "", "", ""
+from helpers import *
+auth_url, api_token, request_url = get_auth("authentification.json")
 
 response = requests.post(auth_url,
                          auth=('apitoken', api_token),

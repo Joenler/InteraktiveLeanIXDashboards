@@ -8,3 +8,4 @@ def get_auth(config_file : str) -> tuple:
 
 
 secrets = get_auth('authentification.json')
+
