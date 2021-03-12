@@ -1,5 +1,6 @@
 import json
 import requests
+import pandas as pd
 
 def get_auth(config_file : str) -> tuple:
     with open(config_file) as f:
@@ -7,9 +8,7 @@ def get_auth(config_file : str) -> tuple:
         return (data["api_token"], data["auth_url"], data["request_url"])
 
 
-secrets = get_auth('authentification.json')
-
-def query_leanix(query: str, auth: str):
+def query_leanix(query: str, auth: str) -> requests.Response:
     authentication = get_auth(auth)
     response = requests.post(authentication[1],
                              auth=('apitoken', authentication[0]),
@@ -23,3 +22,7 @@ def query_leanix(query: str, auth: str):
     header = {'Authorization': auth_header}
 
     return requests.post(url=authentication[2], headers=header, data=json_data)
+
+
+def response_to_df(response: requests.Response) -> pd.DataFrame:
+    return pd.json_normalize(response.json()['data']['allFactSheets']['edges'])
