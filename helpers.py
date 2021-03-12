@@ -7,4 +7,4 @@ def get_auth(config_file : str) -> tuple:
         return (data["api_token"], data["auth_url"], data["request_url"])
 
 
-secrets = get_auth('AUTH.json')
+secrets = get_auth('authentification.json')
