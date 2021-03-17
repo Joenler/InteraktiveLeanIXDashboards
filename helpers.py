@@ -4,6 +4,7 @@ import pandas as pd
 import datetime
 import re
 
+
 def get_auth(config_file: str) -> tuple:
     with open(config_file) as f:
         data = json.load(f)
@@ -38,24 +39,27 @@ def get_avg_completion(df: pd.DataFrame) -> float:
     return df["Completion"].mean()
 
 
-def get_system_owners(df: pd.DataFrame):
+def get_percent_system_owners(df: pd.DataFrame) -> tuple:
+    return (len(df[df["System Owner"] != ""])/len(df)), (len(df[df["System Owner"] == ""])/len(df))
+
+
+def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
     regex2 = r'(\w+\@\w+\.\w+\.\w+)'
-    # regex = r'(Systemejer:) (\w+) (\w+|\w\.) (\w+|\w\.| )*(\<)(\w+\@\w+\.\w+\.\w+)( |\>)+'
-    df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "User Group"})
-    user_group = df["User Group"]
+    df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "System Owner"})
+    user_group = df["System Owner"]
     length = len(user_group)
     for i in range(length):
         try:
             if user_group[i][0]["node"]["usageType"] == "owner":
                 if re.search(regex2, user_group.iloc[i][0]["node"]["description"]) is not None:
                     match = re.search(regex2, user_group.iloc[i][0]["node"]["description"]).group()
-                    df["User Group"].iloc[i] = match  # user_group.iloc[i][0]["node"]["description"]
+                    df["System Owner"].iloc[i] = match
                 else:
-                    df["User Group"].iloc[i] = ""
+                    df["System Owner"].iloc[i] = ""
             elif user_group[i][0]["node"]["usageType"] == "user":
-                df["User Group"].iloc[i] = ""
+                df["System Owner"].iloc[i] = ""
         except IndexError:
-            df["User Group"].iloc[i] = ""
+            df["System Owner"].iloc[i] = ""
     return df
 
 
