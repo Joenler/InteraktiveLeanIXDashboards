@@ -39,23 +39,20 @@ def get_avg_completion(df: pd.DataFrame) -> float:
 
 
 def get_system_owners(df: pd.DataFrame):
-    regex2 = r'(\w+\@\w+\.\w+\.\w+)'
-    regex = r'(Systemejer:) (\w+) (\w+|\w\.) (\w+|\w\.| )*(\<)(\w+\@\w+\.\w+\.\w+)( |\>)+'
+    # regex2 = r'(\w+\@\w+\.\w+\.\w+)'
+    # regex = r'(Systemejer:) (\w+) (\w+|\w\.) (\w+|\w\.| )*(\<)(\w+\@\w+\.\w+\.\w+)( |\>)+'
     df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "User Group"})
     user_group = df["User Group"]
-    li = []
     length = len(user_group)
     for i in range(length):
-        for j in range(len(user_group[i])):
-            if user_group[i][j]["node"]["usageType"] == "owner":
-                li.append(user_group[i][j]['node']['description'])
-            elif user_group[i][j]["node"]["usageType"] == "user":
-                break
-            else:
-                li.append("None")
-                break
+        try:
+            if user_group[i][0]["node"]["usageType"] == "owner":
 
-    df["Owner"] = li
+                df["User Group"].iloc[i] = user_group.iloc[i][0]["node"]["description"]
+            elif user_group[i][0]["node"]["usageType"] == "user":
+                df["User Group"].iloc[i] = ""
+        except IndexError:
+            df["User Group"].iloc[i] = ""
     return df
 
 
