@@ -34,27 +34,33 @@ def get_completion_percentages(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns={"node.name": "Name", "node.completion.percentage": "Completion"})
 
 
-
 def get_avg_completion(df: pd.DataFrame) -> float:
     return df["Completion"].mean()
 
 
-def get_system_owners(df: pd.DataFrame) -> tuple:
+def get_system_owners(df: pd.DataFrame):
+    regex2 = r'(\w+\@\w+\.\w+\.\w+)'
     regex = r'(Systemejer:) (\w+) (\w+|\w\.) (\w+|\w\.| )*(\<)(\w+\@\w+\.\w+\.\w+)( |\>)+'
-    has_system_owner = 0
-    no_System_owner = 0
-    total_count = df["node.displayName"].count()
-    for j in range(len(df["node.relApplicationToUserGroup.edges"])):
-        for i in range(len(df["node.relApplicationToUserGroup.edges"][j])):
-            if df["node.relApplicationToUserGroup.edges"][j][i]["node"]["usageType"] == "owner":
-                if re.fullmatch(regex,df["node.relApplicationToUserGroup.edges"][j][i]["node"]["description"]):
-                    has_system_owner += 1
-                else:
-                    no_System_owner += 1
-    return (has_system_owner/total_count), (no_System_owner/total_count)
+    df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "User Group"})
+    user_group = df["User Group"]
+    li = []
+    length = len(user_group)
+    for i in range(length):
+        for j in range(len(user_group[i])):
+            if user_group[i][j]["node"]["usageType"] == "owner":
+                li.append(user_group[i][j]['node']['description'])
+            elif user_group[i][j]["node"]["usageType"] == "user":
+                break
+            else:
+                li.append("None")
+                break
+
+    df["Owner"] = li
+    return df
+
 
 def insert_into_csv(fp: str, data):
     with open(fp) as f:
-        f.write(str(data) + str(datetime.datetime.now) + "\n")
+        f.write(str(data) + str(datetime.datetime.now()) + "\n")
 
 

@@ -6,7 +6,23 @@ from datetime import datetime
 now = datetime.now()
 
 df = response_to_df(query_leanix(QUERY1, "authentification.json"))
-has_system_owner, no_system_owner = get_system_owners(df)
+regex2 = r'(\w+\@\w+\.\w+\.\w+)'
+regex = r'(Systemejer:) (\w+) (\w+|\w\.) (\w+|\w\.| )*(\<)(\w+\@\w+\.\w+\.\w+)( |\>)+'
+df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "User Group"})
+user_group = df["User Group"]
+li = []
+length = len(user_group)
+for i in range(length):
+    for j in range(len(user_group[i])):
+        if user_group[i][j]["node"]["usageType"] == "owner":
+            li.append(user_group[i][j]['node']['description'])
+        elif user_group[i][j]["node"]["usageType"] == "user":
+            break
+        else:
+            li.append("None")
+            break
+
+df["Owner"] = li
 after = datetime.now()
 
 print(f"Runtime: {after-now}")

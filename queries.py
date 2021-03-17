@@ -10,9 +10,6 @@ QUERY1 = '''
           relApplicationToUserGroup{
             edges{
               node{
-                factSheet {
-                  displayName
-                }
                 usageType 
                 description
               }
@@ -38,3 +35,8 @@ QUERY2 = """{
           }
         }
     }"""
+
+
+asdhgf = '''                factSheet {
+                  displayName
+                }'''
