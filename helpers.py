@@ -3,7 +3,8 @@ import requests
 import pandas as pd
 import datetime
 import re
-
+import csv
+from collections.abc import Iterable
 
 def get_auth(config_file: str) -> tuple:
     with open(config_file) as f:
@@ -36,13 +37,14 @@ def get_completion_percentages(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_avg_completion(df: pd.DataFrame) -> float:
-    return df["Completion"].mean()
+    return round(df["Completion"].mean(), 3)
 
 
 def get_percent_system_owners(df: pd.DataFrame) -> tuple:
-    return (len(df[df["System Owner"] != ""])/len(df)), (len(df[df["System Owner"] == ""])/len(df))
+    return round((len(df[df["System Owner"] != ""])/len(df)), 3), round((len(df[df["System Owner"] == ""])/len(df)), 3)
 
 
+# Could perhaps need some refactoring. I Have an idea with json.normalize.
 def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
     regex2 = r'(\w+\@\w+\.\w+\.\w+)'
     df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "System Owner"})
@@ -64,7 +66,13 @@ def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def insert_into_csv(fp: str, data):
-    with open(fp) as f:
-        f.write(str(data) + str(datetime.datetime.now()) + "\n")
+    if not isinstance(data, Iterable):
+        data = [data]
+    row = [f"{datetime.date.today()}"] + [f"{i}" for i in data]
+
+    with open(fp, 'a', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow(row)
+
 
 
