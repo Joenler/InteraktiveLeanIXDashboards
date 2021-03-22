@@ -31,6 +31,27 @@ def response_to_df(response: requests.Response) -> pd.DataFrame:
     return pd.json_normalize(response.json()['data']['allFactSheets']['edges'])
 
 
+# Could perhaps need some refactoring. I Have an idea with json.normalize.
+def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
+    regex = r'(\w+\@\w+\.\w+\.\w+)'
+    df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "System Owner"})
+    user_group = df["System Owner"]
+    length = len(user_group)
+    for i in range(length):
+        try:
+            if user_group[i][0]["node"]["usageType"] == "owner":
+                if re.search(regex, user_group.iloc[i][0]["node"]["description"]) is not None:
+                    match = re.search(regex, user_group.iloc[i][0]["node"]["description"]).group()
+                    df["System Owner"].iloc[i] = match
+                else:
+                    df["System Owner"].iloc[i] = ""
+            elif user_group[i][0]["node"]["usageType"] == "user":
+                df["System Owner"].iloc[i] = ""
+        except IndexError:
+            df["System Owner"].iloc[i] = ""
+    return df
+
+
 def get_completion_percentages(df: pd.DataFrame) -> pd.DataFrame:
     df = df[["node.name", "node.completion.percentage"]]
     return df.rename(columns={"node.name": "Name", "node.completion.percentage": "Completion"})
@@ -44,27 +65,6 @@ def get_percent_system_owners(df: pd.DataFrame) -> tuple:
     return round((len(df[df["System Owner"] != ""])/len(df)), 3), round((len(df[df["System Owner"] == ""])/len(df)), 3)
 
 
-# Could perhaps need some refactoring. I Have an idea with json.normalize.
-def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
-    regex2 = r'(\w+\@\w+\.\w+\.\w+)'
-    df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "System Owner"})
-    user_group = df["System Owner"]
-    length = len(user_group)
-    for i in range(length):
-        try:
-            if user_group[i][0]["node"]["usageType"] == "owner":
-                if re.search(regex2, user_group.iloc[i][0]["node"]["description"]) is not None:
-                    match = re.search(regex2, user_group.iloc[i][0]["node"]["description"]).group()
-                    df["System Owner"].iloc[i] = match
-                else:
-                    df["System Owner"].iloc[i] = ""
-            elif user_group[i][0]["node"]["usageType"] == "user":
-                df["System Owner"].iloc[i] = ""
-        except IndexError:
-            df["System Owner"].iloc[i] = ""
-    return df
-
-
 def insert_into_csv(fp: str, data):
     if not isinstance(data, Iterable):
         data = [data]
@@ -73,6 +73,7 @@ def insert_into_csv(fp: str, data):
     with open(fp, 'a', newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(row)
+
 
 
 
