@@ -6,6 +6,7 @@ import re
 import csv
 from collections.abc import Iterable
 
+
 def get_auth(config_file: str) -> tuple:
     with open(config_file) as f:
         data = json.load(f)
@@ -31,7 +32,6 @@ def response_to_df(response: requests.Response) -> pd.DataFrame:
     return pd.json_normalize(response.json()['data']['allFactSheets']['edges'])
 
 
-# Could perhaps need some refactoring. I Have an idea with json.normalize.
 def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
     regex = r'(\w+\@\w+\.\w+\.\w+)'
     df = df.rename(columns={"node.displayName": "Name", "node.relApplicationToUserGroup.edges": "System Owner"})
@@ -62,7 +62,9 @@ def get_avg_completion(df: pd.DataFrame) -> float:
 
 
 def get_percent_system_owners(df: pd.DataFrame) -> tuple:
-    return round((len(df[df["System Owner"] != ""])/len(df)), 3), round((len(df[df["System Owner"] == ""])/len(df)), 3)
+    has_system_owners = len(df[df["System Owner"] != ""])/len(df)
+    no_system_owners = len(df[df["System Owner"] == ""]/len(df))
+    return round(has_system_owners, 3), round(no_system_owners, 3)
 
 
 def insert_into_csv(fp: str, data):
