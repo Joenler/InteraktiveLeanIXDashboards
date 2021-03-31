@@ -28,7 +28,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 authentification.json
-queries.py
+constants.py
 completions.csv
 systemOwners.csv
 # PyInstaller

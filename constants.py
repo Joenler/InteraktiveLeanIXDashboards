@@ -1,4 +1,5 @@
 
+ROUNDING_PRECISION = 3
 
 QUERY1 = '''
 {
@@ -36,7 +37,3 @@ QUERY2 = """{
         }
     }"""
 
-
-asdhgf = '''                factSheet {
-                  displayName
-                }'''

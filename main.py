@@ -1,5 +1,5 @@
 from helpers import *
-from queries import QUERY2, QUERY1
+from constants import QUERY2, QUERY1
 from datetime import datetime
 
 if __name__ == '__main__':

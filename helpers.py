@@ -5,6 +5,7 @@ import datetime
 import re
 import csv
 from collections.abc import Iterable
+from constants import ROUNDING_PRECISION
 
 
 def get_auth(config_file: str) -> tuple:
@@ -58,13 +59,13 @@ def get_completion_percentages(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_avg_completion(df: pd.DataFrame) -> float:
-    return round(df["Completion"].mean(), 3)
+    return round(df["Completion"].mean(), ROUNDING_PRECISION)
 
 
 def get_percent_system_owners(df: pd.DataFrame) -> tuple:
     has_system_owners = len(df[df["System Owner"] != ""])/len(df)
     no_system_owners = len(df[df["System Owner"] == ""]/len(df))
-    return round(has_system_owners, 3), round(no_system_owners, 3)
+    return round(has_system_owners, ROUNDING_PRECISION), round(no_system_owners, ROUNDING_PRECISION)
 
 
 def insert_into_csv(fp: str, data):
