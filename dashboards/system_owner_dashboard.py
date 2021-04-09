@@ -13,7 +13,7 @@ app = dash.Dash(__name__)
 #####################
 
 
-df = pd.read_csv("systemOwners.csv", names=["Date", "No_System_owner", "Has_System_owner"])
+df = pd.read_csv("../datasets/systemOwners.csv", names=["Date", "No_System_owner", "Has_System_owner"])
 
 
 ######################

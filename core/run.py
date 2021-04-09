@@ -1,6 +1,5 @@
 from helpers import *
-from constants import QUERY2, QUERY1
-from datetime import datetime
+from entities.constants import QUERY2, QUERY1
 
 
 def run():
@@ -11,6 +10,7 @@ def run():
 
     insert_into_csv("completions.csv", get_avg_completion(df2))
     insert_into_csv("systemOwners.csv", get_percent_system_owners(df1))
+
 
 if __name__ == '__main__':
     run()

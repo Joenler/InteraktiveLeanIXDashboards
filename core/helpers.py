@@ -5,7 +5,7 @@ import datetime
 import re
 import csv
 from collections.abc import Iterable
-from constants import ROUNDING_PRECISION
+from entities.constants import ROUNDING_PRECISION
 
 
 def get_auth(config_file: str) -> tuple:

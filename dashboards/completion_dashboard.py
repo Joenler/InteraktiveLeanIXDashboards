@@ -13,7 +13,7 @@ from dash.dependencies import Input, Output
 app = dash.Dash(__name__)
 
 # This is going to be replaced with some database call
-df = pd.read_csv("completions.csv", names=["Date", "Completion"])
+df = pd.read_csv("../datasets/completions.csv", names=["Date", "Completion"])
 
 ######################
 #  Dashboard Layout  #
