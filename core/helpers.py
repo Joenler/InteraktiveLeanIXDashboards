@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from entities.constants import ROUNDING_PRECISION
 
 
+
 def get_auth(config_file: str) -> tuple:
     with open(config_file) as f:
         data = json.load(f)
