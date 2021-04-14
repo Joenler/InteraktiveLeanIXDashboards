@@ -8,7 +8,6 @@ from collections.abc import Iterable
 from entities.constants import ROUNDING_PRECISION
 
 
-
 def get_auth(config_file: str) -> tuple:
     with open(config_file) as f:
         data = json.load(f)
@@ -54,6 +53,41 @@ def get_system_owners(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def create_column_names(df: pd.DataFrame) -> pd.DataFrame:
+    column_names = ["ID", "Type", "Navn", "Display_Name", "Alias", "Beskrivelse", "Systemejer",
+                    "Systemforvalter"]
+    underkategorier = ["UDS_", "DT_", "SS_", "TS_"]
+    inddelinger = ["Økonomiklasse", "Manpower", "Eksterne_ydelser", "Interne_ydelser", "Afdelingskontakt"]
+    for k in underkategorier:
+        for i in inddelinger:
+            combined = k + i
+            column_names.append(combined)
+    remaining_names = ["Dataklassifikiation", "Økonomiklasse", "Persondata", "Hosting", "Livscyklus",
+                       "Licensomkostninger", "Manpower", "Eksterne_ydelser", "Interne_ydelser",
+                       "Total", "kommentarer", "Andet", "nan"]
+    column_names += remaining_names
+    df.columns = column_names
+
+    return df
+
+
+def parse_excel_sheet(fp: str) -> pd.DataFrame:
+    df = create_column_names(pd.read_excel(fp)).drop(0)
+    return df.drop(columns=["kommentarer", "Andet", "nan"])
+
+
+
+def system_owner_count_from_excel(df: pd.DataFrame) -> int:
+    return len(df[df["Systemejer"].notna()])
+
+
+def get_applications_not_in_leanix(df: pd.DataFrame, get_count: bool = False):
+    if get_count:
+        return len(df[df["ID"].isna()])
+    else:
+        return df[df["ID"].isna()].reset_index(drop=True)
+
+
 def get_completion_percentages(df: pd.DataFrame) -> pd.DataFrame:
     df = df[["node.name", "node.completion.percentage"]]
     return df.rename(columns={"node.name": "Name", "node.completion.percentage": "Completion"})
@@ -64,8 +98,9 @@ def get_avg_completion(df: pd.DataFrame) -> float:
 
 
 def get_percent_system_owners(df: pd.DataFrame) -> tuple:
-    has_system_owners = len(df[df["System Owner"] != ""])/len(df)
-    no_system_owners = len(df[df["System Owner"] == ""]/len(df))
+    total = len(df)
+    has_system_owners = len(df[df["System Owner"] != ""])/total
+    no_system_owners = len(df[df["System Owner"] == ""])/total
     return round(has_system_owners, ROUNDING_PRECISION), round(no_system_owners, ROUNDING_PRECISION)
 
 
