@@ -41,10 +41,6 @@ app.layout = html.Div([
 # Dashboard Callback #
 ######################
 
-'''
-Fremgang for afdelingerne vist ved hover. Find data i Excel Arket.
-'''
-
 
 @app.callback(
     Output('completions', "figure"),
