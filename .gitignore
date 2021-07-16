@@ -30,7 +30,6 @@ MANIFEST
 authentification.json
 credentials.json
 datasets/systemliste.xlsx
-entities/constants.py
 datasets/completions.csv
 datasets/systemOwners.csv
 # PyInstaller
